@@ -102,10 +102,8 @@ void archive_insert(item* list)
 
 void insert(void *pointer, int option)
 {
-  char date[sdate], name[sname];
   switch (option) {
     case manual:
-    manual_insert(pointer, date, name);
     break;
     case archive: archive_insert(pointer);
     break;
