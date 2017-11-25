@@ -17,6 +17,12 @@ enum sizes
   sname = 100
 };
 
+enum options
+{
+  manual,
+  archive
+};
+
 typedef struct Item
 {/*Estrutura usada para armazenar os registros do Banco de dados*/
   char date[sdate];
@@ -27,6 +33,7 @@ typedef struct Item
 item* start();
 int   menu();
 FILE* Fopen(char *mode);
+void insert(void *pointer, int option);
 item* manual_insert(item* list, char *date, char *name);
 void archive_insert(item* list);
 void  print();
@@ -39,10 +46,10 @@ int main()
   {
     switch (menu())
     {
-      case 1:
+      case 1: insert(netflix, manual);
       break;
 
-      case 2: archive_insert(netflix);
+      case 2: insert(netflix, archive);
       break;
 
       case 3:
@@ -90,7 +97,16 @@ void archive_insert(item* list)
   archive = Fopen("r");
   char date[sdate], name[sname];
   while ((fscanf(archive, "%[^;];%[^\n]\n", date, name)) == 2) {
+  }
+}
 
+void insert(void *pointer, int option)
+{
+  switch (option) {
+    case manual:
+    break;
+    case archive: archive_insert(pointer);
+    break;
   }
 }
 
