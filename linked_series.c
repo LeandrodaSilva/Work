@@ -41,10 +41,17 @@ void  Print(item *lista);
 void  RecurPrint(item *lista);
 void  InvertedRecurPrint(item *lista);
 void  FreeList(item *lista);
+void Save(item *lista, FILE* arq);
+void SaveList(item* lista);
+void ContList(item *lista);
+void DatePrint(char *data, item *lista);
+
+int quantidade = 0;
 
 int main()
 {/*Função principal*/
   item *netflix = start();
+  char data[sdate] = {'\0'};
 
   while (1)
   {
@@ -79,13 +86,27 @@ int main()
       netflix = start();
       break;
 
-      case 7:
+      case 7: SaveList(netflix);
       break;
 
       case 8:
+      quantidade = 0;
+      ContList(netflix);
+      printf("\n\nQuantidade de itens: %d ", quantidade);
+      pausa("\n\n");
       break;
 
       case 9:
+      do {
+        if (strlen(data) > 1 && strlen(data) < 10)
+        printf("\nErro: Tamanho da data %d\n", strlen(data));
+        printf("\nInforme a data para buscar: [dd/mm/aaaa]? ");
+        fflush(stdin);
+      } while(scanf("%10[0123456789/]s", data) == 0 || strlen(data) < 10);
+      printf("\nItens encontrados: \n\n");
+      DatePrint(data, netflix);
+      strcpy(data, "");
+      pausa("\n\nContinuar...");
       break;
 
       case 10: exit(1);
@@ -150,7 +171,7 @@ item* archive_insert(item* list)
 }
 
 item* insert(void *pointer, int option)
-{
+{/*Insere itens na lista de forma manual ou com arquivos*/
   char *date = calloc(sdate, sizeof(char)), name[sname];
   item *new = start();
   switch (option) {
@@ -164,8 +185,11 @@ item* insert(void *pointer, int option)
     do {
       printf("\nInforme o nome: ");
       fflush(stdin);
-    } while(scanf("%99[^;]", name) == 0);
-    return  manual_insert(pointer, date, name);
+    } while(scanf("%99[^;\n]", name) == 0);
+    new =  manual_insert(pointer, date, name);
+    printf("\n\n Arquivo carregado com sucesso!\n");
+    pausa("\n\nContinuar...");
+    return new;
     break;
 
     case archive:
@@ -223,7 +247,7 @@ void InvertedRecurPrint(item *lista)
 }
 
 void FreeList(item *lista)
-{
+{/*Apaga todos os itens da memória*/
   item *atual, *proxima;
   if (lista != NULL) {
     while (lista != NULL){
@@ -238,6 +262,61 @@ void FreeList(item *lista)
   }else{
     printf("\n\nA lista esta vazia!\n");
     pausa("Continuar...");
+  }
+}
+
+void Save(item *lista, FILE* arq)
+{/*Percorre a lista e imprime no arquivo*/
+  if (lista == NULL) {
+    return;
+  } else {
+    Save(lista->next, arq);
+    fprintf(arq, "%s;%s\n", lista->date, lista->name);
+  }
+}
+
+
+void SaveList(item* lista)
+{/*Salva a lista em arquivo de texto escolhido pelo usuario*/
+  FILE *arq;
+  char nome_arq[50];
+
+  if (lista != NULL)
+  {
+    do {
+      printf("\nInforme o nome do arquivo para salvar: [xxxxxx.txt]? ");
+      fflush(stdin);
+    } while((scanf("%49[a-zA-Z.]s", nome_arq)) != 1);
+
+    arq = Fopen(nome_arq, "w");
+    Save(lista, arq);
+    printf("Arquivo \"%s\" salvo com sucesso!!\n", nome_arq);
+    pausa("\n\nPressione qualquer tecla para continuar. . .");
+  }else{
+    printf("Nada para Salvar\n");
+    pausa("\nPressione qualquer tecla para continuar. . .");
+  }
+}
+
+void ContList(item *lista)
+{/*Conta a quantidade de itens e retorna o resultado*/
+  if (lista == NULL) {
+    return;
+  }else{
+    quantidade++;
+    ContList(lista->next);
+  }
+}
+
+void DatePrint(char *data, item *lista)
+{/*Percorre a lista e imprime no arquivo*/
+  if (lista == NULL) {
+    return;
+  } else {
+    DatePrint(data, lista->next);
+    if (strcmp(lista->date, data) == 0) {
+      printf("%s;%s\n", lista->date, lista->name);
+    }
   }
 }
 
