@@ -37,8 +37,10 @@ FILE* Fopen(char *name, char *mode);
 item* insert(void *pointer, int option);
 item* manual_insert(item *list, char *date, char *name);
 item* archive_insert(item *list);
-void  print(item *lista);
-void  recurprint(item *lista);
+void  Print(item *lista);
+void  RecurPrint(item *lista);
+void  InvertedRecurPrint(item *lista);
+void  FreeList(item *lista);
 
 int main()
 {/*Função principal*/
@@ -54,16 +56,27 @@ int main()
       case 2: netflix = insert(netflix, archive);
       break;
 
-      case 3: print(netflix);
+      case 3: Print(netflix);
       break;
 
-      case 4: recurprint(netflix);
+      case 4: system(cls);
+      if (netflix != NULL) {
+        RecurPrint(netflix);
+      }else {
+        printf("Nada para imprimir\n");
+        pausa("\n\nPressione qualquer tecla para continuar. . .");
+      }
       break;
 
-      case 5:
+      case 5: system(cls);
+      if (netflix != NULL) {
+        InvertedRecurPrint(netflix);
+      }else printf("Nada para imprimir\n");
+      pausa("\n\nPressione qualquer tecla para continuar. . .");
       break;
 
-      case 6:
+      case 6: FreeList(netflix);
+      netflix = start();
       break;
 
       case 7:
@@ -166,24 +179,58 @@ FILE* Fopen(char *name, char *mode)
   }else return arq;
 }
 
-void print(item *lista)
+void Print(item *lista)
 {/*Imprime a lista de forma iterativa*/
   system(cls);
-  while (lista != NULL){
-    printf("%s;%s\n", lista->date, lista->name);
-    lista = lista->next;
+  if (lista != NULL) {
+    while (lista != NULL){
+      printf("%s;%s\n", lista->date, lista->name);
+      lista = lista->next;
+    }
+      pausa("\n\nPressione qualquer tecla para continuar. . .");
+  }else{
+    printf("Nada para imprimir\n");
+    pausa("\nPressione qualquer tecla para continuar. . .");
   }
-  pausa("\n\nPressione qualquer tecla para continuar. . .");
 }
 
-void recurprint(item *lista)
+void RecurPrint(item *lista)
 {/*Imprime a lista de forma iterativa*/
   if (lista == NULL) {
     pausa("\n\nPressione qualquer tecla para continuar. . .");
     return;
   } else {
     printf("%s;%s\n", lista->date, lista->name);
-    recurprint(lista->next);
+    RecurPrint(lista->next);
+  }
+}
+
+void InvertedRecurPrint(item *lista)
+{/*Imprime a lista de forma iterativa*/
+  if (lista == NULL) {
+    return;
+  } else {
+    InvertedRecurPrint(lista->next);
+    printf("%s;%s\n", lista->date, lista->name);
+  }
+}
+
+void FreeList(item *lista)
+{
+  item *atual, *proxima;
+  if (lista != NULL) {
+    while (lista != NULL){
+      atual = lista;
+      proxima = lista->next;
+      printf("Liberando memoria: %p\n", atual);
+      free(atual);
+      lista = proxima;
+    }
+    printf("\nApagado com Sucesso!\n");
+    pausa("Continuar...");
+  }else{
+    printf("\n\nA lista esta vazia!\n");
+    pausa("Continuar...");
   }
 }
 
