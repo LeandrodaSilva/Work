@@ -1,3 +1,2 @@
 
-Trabalho de Técnicas de Programação.
-
+Trabalho final de Técnicas de Programação.
