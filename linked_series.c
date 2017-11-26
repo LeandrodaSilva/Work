@@ -9,11 +9,11 @@
 #define cls "clear"
 #endif
 
-#define arqname "MY_SERIES.txt"
+#define arqname "SERIES.txt"
 
 enum sizes
 {/*Valores dos tamanhos usados nos tipos de dados*/
-  sdate = 8,
+  sdate = 11,
   sname = 100
 };
 
@@ -30,13 +30,15 @@ typedef struct Item
   struct Item* next;
 } item;
 
+void pausa(char *text);
 item* start();
 int   menu();
-FILE* Fopen(char *mode);
-void insert(void *pointer, int option);
-item* manual_insert(item* list, char *date, char *name);
-void archive_insert(item* list);
-void  print();
+FILE* Fopen(char *name, char *mode);
+item* insert(void *pointer, int option);
+item* manual_insert(item *list, char *date, char *name);
+item* archive_insert(item *list);
+void  print(item *lista);
+void  recurprint(item *lista);
 
 int main()
 {/*Função principal*/
@@ -46,13 +48,31 @@ int main()
   {
     switch (menu())
     {
-      case 1: insert(netflix, manual);
+      case 1: netflix = insert(netflix, manual);
       break;
 
-      case 2: insert(netflix, archive);
+      case 2: netflix = insert(netflix, archive);
       break;
 
-      case 3:
+      case 3: print(netflix);
+      break;
+
+      case 4: recurprint(netflix);
+      break;
+
+      case 5:
+      break;
+
+      case 6:
+      break;
+
+      case 7:
+      break;
+
+      case 8:
+      break;
+
+      case 9:
       break;
 
       case 10: exit(1);
@@ -70,6 +90,12 @@ int menu()
     printf("[01] - Inserir um item manualmente.\n");
     printf("[02] - Carregar um arquivo com os meus itens.\n");
     printf("[03] - Listar os itens de forma iterativa.\n");
+    printf("[04] - Listar os itens de forma recursiva.\n");
+    printf("[05] - Listar os itens de forma recursiva invertida.\n");
+    printf("[06] - Limpar a lista em memoria.\n");
+    printf("[07] - Salvar lista em arquivo de texto.\n");
+    printf("[08] - Contar itens em memoria.\n");
+    printf("[09] - Procurar item por data. \n");
     printf("[10] - Sair\n\n: ");
     setbuf(stdin, NULL);
     scanf("%d", &key);
@@ -91,34 +117,79 @@ item* manual_insert(item* list, char *date, char *name)
 	return new;
 }
 
-void archive_insert(item* list)
+item* archive_insert(item* list)
 {/*Insere itens na lista*/
   FILE *archive;
-  archive = Fopen("r");
+  item *new = start();
+  archive = Fopen(arqname, "r");
   char date[sdate], name[sname];
-  while ((fscanf(archive, "%[^;];%[^\n]\n", date, name)) == 2) {
+  while ((fscanf(archive, "%[^;];%[^\n]\n", date, name)) == 2)
+  {
+    new = manual_insert(new, date, name);
   }
+  return new;
 }
 
-void insert(void *pointer, int option)
+item* insert(void *pointer, int option)
 {
+  char *date = calloc(sdate, sizeof(char)), name[sname];
+  item *new = start();
   switch (option) {
     case manual:
+    do {
+      if (strlen(date) > 1 && strlen(date) < 10)
+      printf("\nErro: Tamanho da data %d\n", strlen(date));
+      printf("\nInforme a data: [dd/mm/aaaa]? ");
+      fflush(stdin);
+    } while(scanf("%10[0123456789/]s", date) == 0 || strlen(date) < 10);
+    do {
+      printf("\nInforme o nome: ");
+      fflush(stdin);
+    } while(scanf("%99[^;]", name) == 0);
+    return  manual_insert(pointer, date, name);
     break;
-    case archive: archive_insert(pointer);
+
+    case archive:
+    new = archive_insert(pointer);
+    printf("\n\n Arquivo carregado com sucesso!\n");
+    pausa("\n\nContinuar...");
+    return new;
     break;
   }
 }
 
-FILE* Fopen(char *mode)
+FILE* Fopen(char *name, char *mode)
 {/*Faz abertura de arquivos com tratamento de erro*/
   FILE *arq;
-  if ((arq = fopen(arqname, mode)) == NULL) {
+  if ((arq = fopen(name, mode)) == NULL) {
     printf("\nErro ocorrido: %s\n", strerror(errno));
   }else return arq;
 }
 
-void print()
+void print(item *lista)
 {/*Imprime a lista de forma iterativa*/
+  system(cls);
+  while (lista != NULL){
+    printf("%s;%s\n", lista->date, lista->name);
+    lista = lista->next;
+  }
+  pausa("\n\nPressione qualquer tecla para continuar. . .");
+}
 
+void recurprint(item *lista)
+{/*Imprime a lista de forma iterativa*/
+  if (lista == NULL) {
+    pausa("\n\nPressione qualquer tecla para continuar. . .");
+    return;
+  } else {
+    printf("%s;%s\n", lista->date, lista->name);
+    recurprint(lista->next);
+  }
+}
+
+void pausa(char *text)
+{/*Efetua uma pausa no programa*/
+  printf("%s", text);
+  fflush(stdin);
+  scanf("%*c");
 }
