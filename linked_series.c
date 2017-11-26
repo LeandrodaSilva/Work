@@ -135,14 +135,17 @@ item* archive_insert(item* list)
   FILE *archive;
   item *new = start();
   char name_arq[50];
-  printf("\nInforme o nome do arquivo: [xxxxxx.txt]? ");
-  scanf("%49s", name_arq);
-  archive = Fopen(name_arq, "r");
   char date[sdate], name[sname];
+  do {
+    printf("\nInforme o nome do arquivo: [xxxxxx.txt]? ");
+    fflush(stdin);
+    scanf("%49s", name_arq);
+  } while((archive = Fopen(name_arq, "r")) == NULL);
   while ((fscanf(archive, "%[^;];%[^\n]\n", date, name)) == 2)
   {
     new = manual_insert(new, date, name);
   }
+  fclose(archive);
   return new;
 }
 
@@ -179,6 +182,7 @@ FILE* Fopen(char *name, char *mode)
   FILE *arq;
   if ((arq = fopen(name, mode)) == NULL) {
     printf("\nErro ocorrido: %s\n", strerror(errno));
+    return NULL;
   }else return arq;
 }
 
