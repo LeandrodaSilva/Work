@@ -205,6 +205,8 @@ item* insert(void *pointer, int option)
     break;
 
     case archive:
+    FreeList(pointer);
+    pointer = start();
     new = archive_insert(pointer);
     printf("\n\n Arquivo carregado com sucesso!\n");
     pausa("\n\nContinuar...");
