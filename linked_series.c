@@ -109,7 +109,10 @@ int main()
       pausa("\n\nContinuar...");
       break;
 
-      case 10: exit(1);
+      case 10:
+      FreeList(netflix);
+      netflix = start();
+      exit(1);
       break;
     }
   }
