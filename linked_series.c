@@ -134,7 +134,10 @@ item* archive_insert(item* list)
 {/*Insere itens na lista*/
   FILE *archive;
   item *new = start();
-  archive = Fopen(arqname, "r");
+  char name_arq[50];
+  printf("\nInforme o nome do arquivo: [xxxxxx.txt]? ");
+  scanf("%49s", name_arq);
+  archive = Fopen(name_arq, "r");
   char date[sdate], name[sname];
   while ((fscanf(archive, "%[^;];%[^\n]\n", date, name)) == 2)
   {
