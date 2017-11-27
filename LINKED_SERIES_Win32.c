@@ -53,7 +53,7 @@ item* archive_insert(item *list);
 void  Print(item *lista);
 void  RecurPrint(item *lista);
 void  InvertedRecurPrint(item *lista);
-void  FreeList(item *lista);
+int  FreeList(item *lista);
 void Save(item *lista, FILE* arq);
 void SaveList(item* lista);
 void ContList(item *lista);
@@ -95,8 +95,15 @@ int main()
       pausa("\n\nPressione qualquer tecla para continuar. . .");
       break;
 
-      case 6: FreeList(netflix);
-      netflix = start();
+      case 6:
+      if (FreeList(netflix)) {
+        printf("\nApagado com sucesso!!\n");
+        netflix = start();
+        pausa("Continuar ...");
+      }else{
+        printf("\nNada para apagar!!\n");
+        pausa("Continuar...");
+      }
       break;
 
       case 7: SaveList(netflix);
@@ -203,9 +210,32 @@ item* archive_insert(item* list)
   item *new = start();
   char name_arq[50];
   char date[sdate], name[sname];
+  int linha = 3, coluna = 10, i;
   do {
+    linha = 4; coluna = 10;
     system(cls);
-    printf("\nInforme o nome do arquivo: [xxxxxx.txt]? ");
+    gotoxy(2, coluna+24);
+    printf("CARREGAR DE ARQUIVO");
+    gotoxy(linha ,coluna);
+    printf("\xC9");
+    for (i = 0; i < 67; i++) { // largura da moldura
+      printf("\xCD");
+    }
+    printf("\xBB\n");
+    gotoxy(++linha, coluna);
+    printf("\xBA Informe o nome do arquivo:                                        \xBA\n");
+    gotoxy(++linha, coluna);
+    printf("\xBA [xxxxxx.txt]?                                                     \xBA\n");
+    gotoxy(++linha , coluna);
+    printf("\xBA                                                                   \xBA\n");
+    gotoxy(++linha, coluna);
+    printf("\xC8");
+    for (size_t i = 0; i < 67; i++) {
+      printf("\xCD");
+    }
+    printf("\xBC\n");
+    linha -= 2;
+    gotoxy(linha, coluna+strlen("  [xxxxxx.txt]? "));
     fflush(stdin);
     scanf("%49s", name_arq);
   } while((archive = Fopen(name_arq, "r")) == NULL);
@@ -285,11 +315,25 @@ item* insert(void *pointer, int option)
     FreeList(pointer);
     pointer = start();
     new = archive_insert(pointer);
-    printf("\n\n Arquivo carregado com sucesso!\n");
-    pausa("\n\nContinuar...");
+    gotoxy(7, 28);
+    printf("Arquivo carregado com sucesso!\n");
+    gotoxy(25, 21);
+    pausa("Pressione qualquer tecla para continuar...");
     return new;
     break;
   }
+}
+
+FILE* Fopen(char *name, char *mode)
+{/*Faz abertura de arquivos com tratamento de erro*/
+  FILE *arq;
+  if ((arq = fopen(name, mode)) == NULL) {
+    gotoxy(7, 22);
+    printf("Erro ocorrido: %s\n", strerror(errno));
+    gotoxy(25, 21);
+    pausa("Pressione qualquer tecla para continuar...");
+    return NULL;
+  }else return arq;
 }
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 #else
@@ -364,6 +408,15 @@ item* insert(void *pointer, int option)
     break;
   }
 }
+
+FILE* Fopen(char *name, char *mode)
+{/*Faz abertura de arquivos com tratamento de erro*/
+  FILE *arq;
+  if ((arq = fopen(name, mode)) == NULL) {
+    printf("\nErro ocorrido: %s\n", strerror(errno));
+    return NULL;
+  }else return arq;
+}
 #endif
 
 
@@ -382,18 +435,6 @@ item* manual_insert(item* list, char *date, char *name)
   return new;
 }
 
-
-
-
-
-FILE* Fopen(char *name, char *mode)
-{/*Faz abertura de arquivos com tratamento de erro*/
-  FILE *arq;
-  if ((arq = fopen(name, mode)) == NULL) {
-    printf("\nErro ocorrido: %s\n", strerror(errno));
-    return NULL;
-  }else return arq;
-}
 
 void Print(item *lista)
 {/*Imprime a lista de forma iterativa*/
@@ -431,7 +472,7 @@ void InvertedRecurPrint(item *lista)
   }
 }
 
-void FreeList(item *lista)
+int FreeList(item *lista)
 {/*Apaga todos os itens da memória*/
   item *atual, *proxima;
   if (lista != NULL) {
@@ -442,11 +483,9 @@ void FreeList(item *lista)
       free(atual);
       lista = proxima;
     }
-    printf("\nApagado com Sucesso!\n");
-    pausa("Continuar...");
+    return 1;
   }else{
-    printf("\n\nA lista esta vazia!\n");
-    pausa("Continuar...");
+    return 0;
   }
 }
 
