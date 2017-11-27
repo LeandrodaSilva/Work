@@ -63,9 +63,11 @@ int quantidade = 0;
 
 int main()
 {/*Função principal*/
+  #ifdef _WIN32
+  system("mode con:cols=90 lines=30");
+  #endif
   item *netflix = start();
   char data[sdate] = {'\0'};
-
   while (1)
   {
     switch (menu())
@@ -303,10 +305,10 @@ item* insert(void *pointer, int option)
       fflush(stdin);
     } while(scanf("%99[^;\n]", name) == 0);
     new =  manual_insert(pointer, date, name);
-    linha += 4;
+    linha += 1;
     gotoxy(linha, coluna+16);
     printf("Arquivo carregado com sucesso!!");
-    gotoxy(++linha, coluna+12);
+    gotoxy(25, 21);
     pausa("Pressione qualquer tecla para continuar...");
     return new;
     break;
