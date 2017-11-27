@@ -497,10 +497,15 @@ int FreeList(item *lista)
 {/*Apaga todos os itens da memória*/
   item *atual, *proxima;
   int porcentagem = 0, barra = 0, progresso = 0, estado=0;
+  HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);// pega as informações do console atual
+  CONSOLE_CURSOR_INFO info; // estrutura contendo as configurações do cursor
+  info.dwSize = 10;//define o tamanho do cursor
   ContList(lista);
   gotoxy(20, 30);
   printf("Quantidade de registros: %d\n", quantidade);
   if (lista != NULL) {
+    info.bVisible = FALSE;// define o cursor como oculto
+    SetConsoleCursorInfo(consoleHandle, &info);// envia as configurações para o console capturado
     while (lista != NULL){
       atual = lista;
       proxima = lista->next;
@@ -529,6 +534,8 @@ int FreeList(item *lista)
       printf ("%c", 0xDB); //simbolo da barra
     }
     quantidade = 0; //zera a quantidade para uso em outras funções
+    info.bVisible = TRUE;//define o cursor como visivel
+    SetConsoleCursorInfo(consoleHandle, &info);// envia as informaçoes para o console capturado
     return 1;
   }else{
     return 0;
