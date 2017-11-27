@@ -146,8 +146,7 @@ int main()
       printf("Itens encontrados: \n\n");
       DatePrint(data, netflix);
       strcpy(data, "");
-      gotoxy(25, 21);
-      pausa("Pressione qualquer tecla para continuar...");
+      pausa("\n\nPressione qualquer tecla para continuar...");
       break;
 
       case 10:
