@@ -118,22 +118,36 @@ int main()
       case 8:
       quantidade = 0;
       ContList(netflix);
-      printf("\n\nQuantidade de itens: %d ", quantidade);
-      pausa("\n\n");
+      gotoxy(20, 14);
+      printf("Quantidade de itens: %d ", quantidade);
+      gotoxy(25, 21);
+      pausa("Pressione qualquer tecla para continuar...");
       quantidade = 0;
       break;
 
       case 9:
       do {
-        if (strlen(data) > 1 && strlen(data) < 10)
-        printf("\nErro: Tamanho da data %d\n", strlen(data));
-        printf("\nInforme a data para buscar: [dd/mm/aaaa]? ");
+        if (strlen(data) > 1 && strlen(data) < 10){
+          gotoxy(21, 28);
+          printf("             ");
+          gotoxy(21, 43);
+          printf("Erro: Tamanho da data %d\n", strlen(data));
+        }
+        gotoxy(20, 14);
+        printf("Informe a data para buscar");
+        gotoxy(21, 14);
+        printf("[dd/mm/aaaa]? ");
         fflush(stdin);
+        gotoxy(21, 28);
+        printf("   ");
+        gotoxy(21, 28);
       } while(scanf("%10[0123456789/]s", data) == 0 || strlen(data) < 10);
-      printf("\nItens encontrados: \n\n");
+      gotoxy(22, 14);
+      printf("Itens encontrados: \n\n");
       DatePrint(data, netflix);
       strcpy(data, "");
-      pausa("\n\nContinuar...");
+      gotoxy(25, 21);
+      pausa("Pressione qualquer tecla para continuar...");
       break;
 
       case 10:
@@ -541,17 +555,24 @@ void SaveList(item* lista)
   if (lista != NULL)
   {
     do {
-      printf("\nInforme o nome do arquivo para salvar: [xxxxxx.txt]? ");
+      gotoxy(20, 14);
+      printf("Informe o nome do arquivo para salvar");
+      gotoxy(21, 14);
+      printf("[xxxxxx.txt]? ");
       fflush(stdin);
     } while((scanf("%49[a-zA-Z.]s", nome_arq)) != 1);
 
     arq = Fopen(nome_arq, "w");
     Save(lista, arq);
+    gotoxy(23, 30);
     printf("Arquivo \"%s\" salvo com sucesso!!\n", nome_arq);
-    pausa("\n\nPressione qualquer tecla para continuar. . .");
+    gotoxy(25, 21);
+    pausa("Pressione qualquer tecla para continuar...");
   }else{
-    printf("Nada para Salvar\n");
-    pausa("\nPressione qualquer tecla para continuar. . .");
+    gotoxy(20, 34);
+    printf("Nada para Salvar");
+    gotoxy(25, 21);
+    pausa("Pressione qualquer tecla para continuar...");
   }
 }
 
