@@ -99,12 +99,16 @@ int main()
 
       case 6:
       if (FreeList(netflix)) {
-        printf("\nApagado com sucesso!!\n");
+        gotoxy(23, 34);
+        printf("Apagado com sucesso!!\n");
         netflix = start();
-        pausa("Continuar ...");
+        gotoxy(25, 21);
+        pausa("Pressione qualquer tecla para continuar...");
       }else{
-        printf("\nNada para apagar!!\n");
-        pausa("Continuar...");
+        gotoxy(21, 34);
+        printf("Nada para apagar!!");
+        gotoxy(25, 21);
+        pausa("Pressione qualquer tecla para continuar...");
       }
       break;
 
@@ -116,6 +120,7 @@ int main()
       ContList(netflix);
       printf("\n\nQuantidade de itens: %d ", quantidade);
       pausa("\n\n");
+      quantidade = 0;
       break;
 
       case 9:
@@ -134,6 +139,7 @@ int main()
       case 10:
       FreeList(netflix);
       netflix = start();
+      gotoxy(25, 21);
       exit(1);
       break;
     }
@@ -477,14 +483,39 @@ void InvertedRecurPrint(item *lista)
 int FreeList(item *lista)
 {/*Apaga todos os itens da memória*/
   item *atual, *proxima;
+  int porcentagem = 0, barra = 0, progresso = 0, estado=0;
+  ContList(lista);
+  gotoxy(20, 30);
+  printf("Quantidade de registros: %d\n", quantidade);
   if (lista != NULL) {
     while (lista != NULL){
       atual = lista;
       proxima = lista->next;
-      printf("Liberando memoria: %p\n", atual);
       free(atual);
       lista = proxima;
+      /******************Calculo da porcentagem****************/
+      progresso =  quantidade - (quantidade - estado);
+      porcentagem = (progresso*100)/quantidade;
+      printf("  %d%%\r", porcentagem);
+      fflush(stdout);
+      for (barra = 0; barra < (porcentagem/2); barra++){
+        if (barra == 0)
+        printf ("               ");
+        printf ("%c", 0xDB); //simbolo da barra
+      }
+      estado++;
+      /*******************************************************/
     }
+    /*O código abaixo é necessário para que o contador de porcentagem chegue a 100% e não a 99%*/
+    porcentagem = (++progresso*100)/quantidade;
+    printf("  %d%%\r", porcentagem);
+    fflush(stdout);
+    for (barra = 0; barra < (porcentagem/2); barra++){
+      if (barra == 0)
+      printf ("               ");
+      printf ("%c", 0xDB); //simbolo da barra
+    }
+    quantidade = 0; //zera a quantidade para uso em outras funções
     return 1;
   }else{
     return 0;
