@@ -6,18 +6,17 @@
 * por meio de inserção manual ou arquivo, alocar memória para a
 * estrutura dos itens com séries encadeadas de registros.
 */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #define cls "cls"
 #else
 #define cls "clear"
 #endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 
 #define arqname "SERIES.txt"
 
@@ -64,7 +63,8 @@ int quantidade = 0;
 int main()
 {/*Função principal*/
   #ifdef _WIN32
-  system("mode con:cols=90 lines=30");
+  //system("mode con:cols=90 lines=30");
+  system("color F0");
   #endif
   item *netflix = start();
   char data[sdate] = {'\0'};
