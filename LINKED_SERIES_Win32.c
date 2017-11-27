@@ -40,6 +40,9 @@ typedef struct Item
   struct Item* next;
 } item;
 
+#ifdef _WIN32
+void gotoxy(int linha, int coluna);
+#endif
 void pausa(char *text);
 item* start();
 int   menu();
@@ -130,6 +133,7 @@ int main()
 }
 
 #ifdef _WIN32
+/********************************************************************************************************/
 void gotoxy(int linha, int coluna)
 {
   COORD coord;
@@ -147,9 +151,12 @@ void gotoxy(int linha, int coluna)
 int menu()
 {/*Tela principal do programa*/
   int key, i;
-  int spc = 14, line = 7;
+  int spc, line;
   do {
+    spc = 14; line = 7;
     system(cls);
+    gotoxy(2, line+23);
+    printf("CADASTRO DE SERIES NETFLIX");
     gotoxy(line , spc);
     printf("\xC9");
     for (i = 0; i < 59; i++) {
@@ -189,6 +196,102 @@ int menu()
   } while(key < 1 || key > 10);
   return key;
 }
+
+item* archive_insert(item* list)
+{/*Insere itens na lista*/
+  FILE *archive;
+  item *new = start();
+  char name_arq[50];
+  char date[sdate], name[sname];
+  do {
+    system(cls);
+    printf("\nInforme o nome do arquivo: [xxxxxx.txt]? ");
+    fflush(stdin);
+    scanf("%49s", name_arq);
+  } while((archive = Fopen(name_arq, "r")) == NULL);
+  while ((fscanf(archive, "%[^;];%[^\n]\n", date, name)) == 2)
+  {
+    new = manual_insert(new, date, name);
+  }
+  fclose(archive);
+  return new;
+}
+
+item* insert(void *pointer, int option)
+{/*Insere itens na lista de forma manual ou com arquivos*/
+  char *date = calloc(sdate, sizeof(char)), name[sname];
+  item *new = start();
+  int  linha ,coluna, i;
+  switch (option)
+  {
+    case manual:
+    do {
+      linha = 4; coluna = 10;
+      system(cls);
+      gotoxy(2, coluna+24);
+      printf("CADASTRO DE ITEM");
+      gotoxy(linha ,coluna);
+      printf("\xC9");
+      for (i = 0; i < 67; i++) { // largura da moldura
+        printf("\xCD");
+      }
+      printf("\xBB\n");
+      gotoxy(++linha, coluna);
+      printf("\xBA Informe a data: [dd/mm/aaaa]?                                     \xBA\n");
+      gotoxy(++linha, coluna);
+      printf("\xCC\xCD\xCD\xB9                         \xCC");
+      for (i = 0; i < 38; i++) {
+        printf("\xCD");
+      }
+      printf("\xB9\n");
+      if (strlen(date) > 0  && strlen(date) < 10){
+        gotoxy(6, coluna+5);
+        printf("Erro: Tamanho da data %d\n", strlen(date));
+        gotoxy(linha, coluna);
+      }
+      gotoxy(linha+1, coluna);
+      printf("\xBA                                                                   \xBA\n");
+      gotoxy(linha+2, coluna);
+      printf("\xBA Informe o nome:                                                   \xBA\n");
+      linha += 3;
+      gotoxy(linha, coluna);
+      printf("\xBA                                                                   \xBA\n");
+      gotoxy(++linha, coluna);
+      printf("\xC8");
+      for (size_t i = 0; i < 67; i++) {
+        printf("\xCD");
+      }
+      printf("\xBC\n");
+      linha -= 5;
+      gotoxy(linha, coluna+strlen("  Informe a data: [dd/mm/aaaa]? "));
+      fflush(stdin);
+      scanf("%10[0123456789/]s", date);
+    } while(strlen(date) < 10);
+    linha += 3;
+    do {
+      gotoxy(linha, coluna+strlen("  Informe o nome: "));
+      fflush(stdin);
+    } while(scanf("%99[^;\n]", name) == 0);
+    new =  manual_insert(pointer, date, name);
+    linha += 4;
+    gotoxy(linha, coluna+16);
+    printf("Arquivo carregado com sucesso!!");
+    gotoxy(++linha, coluna+12);
+    pausa("Pressione qualquer tecla para continuar...");
+    return new;
+    break;
+
+    case archive:
+    FreeList(pointer);
+    pointer = start();
+    new = archive_insert(pointer);
+    printf("\n\n Arquivo carregado com sucesso!\n");
+    pausa("\n\nContinuar...");
+    return new;
+    break;
+  }
+}
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
 #else
 int menu()
 {/*Tela principal do programa*/
@@ -210,23 +313,6 @@ int menu()
   } while(key < 1 || key > 10);
   return key;
 }
-#endif
-
-
-
-item* start()
-{/*Inicia a lista para inserção*/
-	return NULL;
-}
-
-item* manual_insert(item* list, char *date, char *name)
-{/*Insere itens na lista*/
-  item *new = (item*) malloc(sizeof(item));
-	strcpy(new->date, date);
-  strcpy(new->name, name);
-	new->next  = list;
-	return new;
-}
 
 item* archive_insert(item* list)
 {/*Insere itens na lista*/
@@ -246,7 +332,6 @@ item* archive_insert(item* list)
   fclose(archive);
   return new;
 }
-
 item* insert(void *pointer, int option)
 {/*Insere itens na lista de forma manual ou com arquivos*/
   char *date = calloc(sdate, sizeof(char)), name[sname];
@@ -279,6 +364,27 @@ item* insert(void *pointer, int option)
     break;
   }
 }
+#endif
+
+
+
+item* start()
+{/*Inicia a lista para inserção*/
+  return NULL;
+}
+
+item* manual_insert(item* list, char *date, char *name)
+{/*Insere itens na lista*/
+  item *new = (item*) malloc(sizeof(item));
+  strcpy(new->date, date);
+  strcpy(new->name, name);
+  new->next  = list;
+  return new;
+}
+
+
+
+
 
 FILE* Fopen(char *name, char *mode)
 {/*Faz abertura de arquivos com tratamento de erro*/
@@ -297,7 +403,7 @@ void Print(item *lista)
       printf("%s;%s\n", lista->date, lista->name);
       lista = lista->next;
     }
-      pausa("\n\nPressione qualquer tecla para continuar. . .");
+    pausa("\n\nPressione qualquer tecla para continuar. . .");
   }else{
     printf("Nada para imprimir\n");
     pausa("\nPressione qualquer tecla para continuar. . .");
