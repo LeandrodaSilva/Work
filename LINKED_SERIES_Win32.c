@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Autor: Leandro da Silva
 * Turma: Es21
 * Curso: Engenharia de Software
@@ -251,7 +251,7 @@ item* archive_insert(item* list)
     printf("\xBA                                                                   \xBA\n");
     gotoxy(++linha, coluna);
     printf("\xC8");
-    for (size_t i = 0; i < 67; i++) {
+    for (i = 0; i < 67; i++) {
       printf("\xCD");
     }
     printf("\xBC\n");
@@ -309,7 +309,7 @@ item* insert(void *pointer, int option)
       printf("\xBA                                                                   \xBA\n");
       gotoxy(++linha, coluna);
       printf("\xC8");
-      for (size_t i = 0; i < 67; i++) {
+      for (i = 0; i < 67; i++) {
         printf("\xCD");
       }
       printf("\xBC\n");
@@ -574,6 +574,7 @@ void SaveList(item* lista)
     printf("Arquivo \"%s\" salvo com sucesso!!\n", nome_arq);
     gotoxy(25, 21);
     pausa("Pressione qualquer tecla para continuar...");
+    fclose(arq);
   }else{
     gotoxy(20, 34);
     printf("Nada para Salvar");

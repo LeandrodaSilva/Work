@@ -306,6 +306,7 @@ void SaveList(item* lista)
     Save(lista, arq);
     printf("Arquivo \"%s\" salvo com sucesso!!\n", nome_arq);
     pausa("\n\nPressione qualquer tecla para continuar. . .");
+    fclose(arq);
   }else{
     printf("Nada para Salvar\n");
     pausa("\nPressione qualquer tecla para continuar. . .");
