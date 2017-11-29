@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Autor: Leandro da Silva
 * Turma: Es21
 * Curso: Engenharia de Software
@@ -251,7 +251,7 @@ item* archive_insert(item* list)
     printf("\xBA                                                                   \xBA\n");
     gotoxy(++linha, coluna);
     printf("\xC8");
-    for (size_t i = 0; i < 67; i++) {
+    for (i = 0; i < 67; i++) {
       printf("\xCD");
     }
     printf("\xBC\n");
@@ -309,7 +309,7 @@ item* insert(void *pointer, int option)
       printf("\xBA                                                                   \xBA\n");
       gotoxy(++linha, coluna);
       printf("\xC8");
-      for (size_t i = 0; i < 67; i++) {
+      for (i = 0; i < 67; i++) {
         printf("\xCD");
       }
       printf("\xBC\n");
